@@ -201,6 +201,9 @@ test_result_t test_timer_target_power_down_cpu(void)
 	unsigned int rc;
 	unsigned int valid_cpu_count;
 
+	tftf_testcase_printf("mb: %s(): CPU_SUSPEND function from Power State Coordination to Power-Down not supported. Skipping\n", __func__);
+	return TEST_RESULT_SKIPPED;
+
 	SKIP_TEST_IF_LESS_THAN_N_CPUS(2);
 
 	for (unsigned int i = 0; i < PLATFORM_CORE_COUNT; i++) {
@@ -346,6 +349,9 @@ test_result_t test_timer_target_multiple_same_interval(void)
 	unsigned int core_pos;
 	unsigned int rc;
 
+	tftf_testcase_printf("mb: %s(): CPU_SUSPEND function from Power State Coordination to Power-Down not supported. Skipping\n", __func__);
+	return TEST_RESULT_SKIPPED;
+
 	SKIP_TEST_IF_LESS_THAN_N_CPUS(2);
 
 	for (unsigned int i = 0; i < PLATFORM_CORE_COUNT; i++) {
@@ -423,7 +429,11 @@ static test_result_t do_stress_test(void)
 
 	tftf_send_event(&cpu_ready[core_pos]);
 
+#if TIMERS_MEM_MAPPED
 	end_time = mmio_read_64(SYS_CNT_BASE1 + CNTPCT_LO) + read_cntfrq_el0() * 10;
+#else
+	end_time = syscounter_read() + read_cntfrq_el0() * 10;
+#endif
 
 	/* Construct the state-id for power down */
 	ret = tftf_psci_make_composite_state_id(MPIDR_AFFLVL0,
@@ -441,7 +451,11 @@ static test_result_t do_stress_test(void)
 	}
 
 	do {
+#if TIMERS_MEM_MAPPED
 		current_time = mmio_read_64(SYS_CNT_BASE1 + CNTPCT_LO);
+#else
+		current_time = syscounter_read();
+#endif
 		if (current_time > end_time)
 			break;
 

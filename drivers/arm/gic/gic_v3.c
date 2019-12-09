@@ -57,7 +57,7 @@ static unsigned long long mpidr_list[PLATFORM_CORE_COUNT] = {UINT64_MAX};
 /******************************************************************************
  * GIC Distributor interface accessors for writing entire registers
  *****************************************************************************/
-static void gicd_write_irouter(unsigned int base,
+static void gicd_write_irouter(uintptr_t base,
 				unsigned int interrupt_id,
 				unsigned long long route)
 {
@@ -68,17 +68,17 @@ static void gicd_write_irouter(unsigned int base,
 /******************************************************************************
  * GIC Re-distributor interface accessors for writing entire registers
  *****************************************************************************/
-static void gicr_write_isenabler0(unsigned int base, unsigned int val)
+static void gicr_write_isenabler0(uintptr_t base, unsigned int val)
 {
 	mmio_write_32(base + GICR_ISENABLER0, val);
 }
 
-static void gicr_write_icenabler0(unsigned int base, unsigned int val)
+static void gicr_write_icenabler0(uintptr_t base, unsigned int val)
 {
 	mmio_write_32(base + GICR_ICENABLER0, val);
 }
 
-static void gicr_write_icpendr0(unsigned int base, unsigned int val)
+static void gicr_write_icpendr0(uintptr_t base, unsigned int val)
 {
 	mmio_write_32(base + GICR_ICPENDR0, val);
 }
@@ -102,12 +102,17 @@ static unsigned long long gicr_read_typer(uintptr_t base)
 	return mmio_read_64(base + GICR_TYPER);
 }
 
+static unsigned int gicr_read_waker(uintptr_t base)
+{
+	return mmio_read_32(base + GICR_WAKER);
+}
+
 static unsigned int gicr_read_icfgr1(uintptr_t base)
 {
 	return mmio_read_32(base + GICR_ICFGR1);
 }
 
-static unsigned int gicr_read_isenabler0(unsigned int base)
+static unsigned int gicr_read_isenabler0(uintptr_t base)
 {
 	return mmio_read_32(base + GICR_ISENABLER0);
 }
@@ -118,7 +123,7 @@ static unsigned int gicr_read_ipriorityr(uintptr_t base, unsigned int id)
 	return mmio_read_32(base + GICR_IPRIORITYR + (n << 2));
 }
 
-static unsigned int gicr_read_ispendr0(unsigned int base)
+static unsigned int gicr_read_ispendr0(uintptr_t base)
 {
 	return mmio_read_32(base + GICR_ISPENDR0);
 }
@@ -127,26 +132,26 @@ static unsigned int gicr_read_ispendr0(unsigned int base)
  * GIC Re-distributor interface accessors for individual interrupt
  * manipulation
  *****************************************************************************/
-static unsigned int gicr_get_isenabler0(unsigned int base,
+static unsigned int gicr_get_isenabler0(uintptr_t base,
 	unsigned int interrupt_id)
 {
 	unsigned bit_num = interrupt_id & ((1 << ISENABLER_SHIFT) - 1);
 	return gicr_read_isenabler0(base) & (1 << bit_num);
 }
 
-static void gicr_set_isenabler0(unsigned int base, unsigned int interrupt_id)
+static void gicr_set_isenabler0(uintptr_t base, unsigned int interrupt_id)
 {
 	unsigned bit_num = interrupt_id & ((1 << ISENABLER_SHIFT) - 1);
 	gicr_write_isenabler0(base, (1 << bit_num));
 }
 
-static void gicr_set_icenabler0(unsigned int base, unsigned int interrupt_id)
+static void gicr_set_icenabler0(uintptr_t base, unsigned int interrupt_id)
 {
 	unsigned bit_num = interrupt_id & ((1 << ISENABLER_SHIFT) - 1);
 	gicr_write_icenabler0(base, (1 << bit_num));
 }
 
-static void gicr_set_icpendr0(unsigned int base, unsigned int interrupt_id)
+static void gicr_set_icpendr0(uintptr_t base, unsigned int interrupt_id)
 {
 	unsigned bit_num = interrupt_id & ((1 << ICPENDR_SHIFT) - 1);
 	gicr_write_icpendr0(base, (1 << bit_num));
@@ -354,7 +359,18 @@ void gicv3_set_intr_route(unsigned int interrupt_id,
 	assert(IS_SPI(interrupt_id));
 	route_affinity = mpidr_list[core_pos];
 
+	INFO("mb: INTID %u mpidr_list[core_pos = %u] %llu\n", 
+		interrupt_id,
+		core_pos, mpidr_list[core_pos]);
+
 	gicd_write_irouter(gicd_base_addr, interrupt_id, route_affinity);
+}
+
+unsigned int gicv3_get_waker(uintptr_t core_pos)
+{
+	uintptr_t gicr_base = rdist_pcpu_base[core_pos];
+	assert(gicr_base != 0ULL);
+	return gicr_read_waker(gicr_base);
 }
 
 unsigned int gicv3_get_isenabler(unsigned int interrupt_id)
@@ -489,12 +505,14 @@ void gicv3_setup_distif(void)
 
 	/* Enable the forwarding of interrupts to CPU interface */
 	gicd_ctlr = gicd_read_ctlr(gicd_base_addr);
-
+	
 	/* Assert ARE_NS bit in GICD */
 	assert(gicd_ctlr & (GICD_CTLR_ARE_NS_MASK << GICD_CTLR_ARE_NS_SHIFT));
 
 	gicd_ctlr |= GICD_CTLR_ENABLE_GRP1A;
 	gicd_write_ctlr(gicd_base_addr, gicd_ctlr);
+
+	INFO("mb: tftf: %s() gicd_ctlr %x\n", __func__, gicd_ctlr);
 }
 
 void gicv3_init(uintptr_t gicr_base, uintptr_t gicd_base)

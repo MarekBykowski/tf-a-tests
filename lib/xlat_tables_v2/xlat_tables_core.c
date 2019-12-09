@@ -672,11 +672,21 @@ static int mmap_add_region_check(const xlat_ctx_t *ctx, const mmap_region_t *mm)
 	if ((base_pa > end_pa) || (base_va > end_va))
 		return -ERANGE;
 
-	if ((base_va + (uintptr_t)size - (uintptr_t)1) > ctx->va_max_address)
+	if ((base_va + (uintptr_t)size - (uintptr_t)1) > ctx->va_max_address) {
+		INFO("mb: base_va %llx size %llx ctx->va_max_address %llx\n",
+			(unsigned long long) base_va,
+			(unsigned long long) size,
+			(unsigned long long) ctx->va_max_address);
 		return -ERANGE;
+	}
 
-	if ((base_pa + (unsigned long long)size - 1ULL) > ctx->pa_max_address)
+	if ((base_pa + (unsigned long long)size - 1ULL) > ctx->pa_max_address) {
+		INFO("mb: base_pa %llx size %llx ctx->pa_max_address %llx\n",
+			(unsigned long long) base_pa,
+			(unsigned long long) size,
+			(unsigned long long) ctx->pa_max_address);
 		return -ERANGE;
+	}
 
 	/* Check that there is space in the ctx->mmap array */
 	if (ctx->mmap[ctx->mmap_num - 1].size != 0U)

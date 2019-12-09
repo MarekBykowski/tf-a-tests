@@ -23,8 +23,14 @@ static test_result_t non_lead_cpu_fn(void)
 	unsigned int core_pos = platform_get_core_pos(mpid);
 
 	/* Signal to the lead CPU that the calling CPU has entered the test */
+	/*INFO("mb: CPU#%u sends event cpu_has_entered_test (%p)\n",
+		core_pos,
+		(void*) &cpu_has_entered_test[core_pos]);*/
 	tftf_send_event(&cpu_has_entered_test[core_pos]);
 
+	/*INFO("mb: CPU#%u waits for event %p from lead cpu\n",
+		core_pos,
+		(void*) &lead_cpu_event);*/
 	tftf_wait_for_event(&lead_cpu_event);
 
 	/*
@@ -33,6 +39,9 @@ static test_result_t non_lead_cpu_fn(void)
 	 * non-lead CPUs wait for it.
 	 */
 	waitms(500);
+	/*INFO("mb: CPU#%u waits for event test_is_finished (%p)\n",
+		core_pos,
+		(void*) &test_is_finished);*/
 	tftf_wait_for_event(&test_is_finished);
 
 	return TEST_RESULT_SUCCESS;
@@ -77,6 +86,8 @@ test_result_t test_validation_events(void)
 	/* Re-init lead_cpu_event to be able to reuse it */
 	tftf_init_event(&lead_cpu_event);
 
+	INFO("CPU#0 sent/recv'ed and init'ed events\n");
+		
 	/* Power on all CPUs */
 	for_each_cpu(cpu_node) {
 		cpu_mpid = tftf_get_mpidr_from_node(cpu_node);
@@ -85,6 +96,8 @@ test_result_t test_validation_events(void)
 			continue;
 
 		psci_ret = tftf_cpu_on(cpu_mpid, (uintptr_t) non_lead_cpu_fn, 0);
+		INFO("mb: Powering On CPU#%u\n",
+			platform_get_core_pos(cpu_mpid));
 		if (psci_ret != PSCI_E_SUCCESS) {
 			tftf_testcase_printf(
 				"Failed to power on CPU 0x%x (%d)\n",
@@ -100,6 +113,8 @@ test_result_t test_validation_events(void)
 			continue;
 
 		core_pos = platform_get_core_pos(cpu_mpid);
+		INFO("mb: CPU#0 waits for event cpu_has_entered_test[%u] (%p)\n",
+			core_pos, &cpu_has_entered_test[core_pos]);
 		tftf_wait_for_event(&cpu_has_entered_test[core_pos]);
 	}
 
@@ -110,8 +125,12 @@ test_result_t test_validation_events(void)
 	waitms(500);
 	/* Send the event to half of the CPUs */
 	cpus_count = PLATFORM_CORE_COUNT / 2;
+	INFO("mb: CPU#%u send event lead_cpu_event (%p) to half of CPUs\n",
+		platform_get_core_pos(cpu_mpid), &lead_cpu_event);
 	tftf_send_event_to(&lead_cpu_event, cpus_count);
 	waitms(500);
+	INFO("mb: CPU#%u send event lead_cpu_event (%p) to the other half of CPUs\n",
+		platform_get_core_pos(cpu_mpid), &lead_cpu_event);
 	/* Send the event to the other half of the CPUs */
 	tftf_send_event_to(&lead_cpu_event, PLATFORM_CORE_COUNT - cpus_count);
 

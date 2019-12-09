@@ -310,6 +310,8 @@ static void __dead2 hand_over_to_lead_cpu(void)
 
 	VERBOSE("CPU%u: Hand over to lead CPU%u\n", core_pos,
 		platform_get_core_pos(lead_cpu_mpid));
+	INFO("CPU%u: Hand over to lead CPU%u\n", core_pos,
+		platform_get_core_pos(lead_cpu_mpid));
 
 	/*
 	 * Power on lead CPU.
@@ -586,6 +588,7 @@ void __dead2 tftf_cold_boot_main(void)
 
 	/* The lead CPU is always the primary core. */
 	lead_cpu_mpid = read_mpidr_el1() & MPID_MASK;
+	INFO("mb: Lead CPU is %u (it always starts a new test)\n", lead_cpu_mpid);
 
 	/*
 	 * Hand over to lead CPU if required.
@@ -598,6 +601,7 @@ void __dead2 tftf_cold_boot_main(void)
 		bug_unreachable();
 	}
 
+	INFO("mb: Enter the test session\n");
 	/* Enter the test session */
 	run_tests();
 

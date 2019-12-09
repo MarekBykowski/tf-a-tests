@@ -77,6 +77,14 @@ int32_t tftf_psci_cpu_off(void)
 	smc_args args = { SMC_PSCI_CPU_OFF };
 	smc_ret_values ret_vals;
 
+	/*
+	unsigned int mpid = read_mpidr_el1() & MPID_MASK;
+	unsigned int core_pos = platform_get_core_pos(mpid);
+	*/
+
+	/*INFO("mb: CPU#%u: %s() for CPU#%u: fid SMC_PSCI_CPU_OFF\n", 
+		core_pos, __func__, core_pos);*/
+
 	ret_vals = tftf_smc(&args);
 	return ret_vals.ret0;
 }
@@ -175,6 +183,9 @@ int tftf_psci_make_composite_state_id(uint32_t affinity_level,
 				*state_id |= psci_make_local_state_id(i,
 							state_prop->state_ID);
 				found_entry = 1;
+				INFO("mb: on CPU#%u: found PSTATE_TYPE_POWERDOWN, state-id  %u\n",
+					platform_get_core_pos(read_mpidr_el1()),
+					*state_id);
 				break;
 			}
 			state_prop++;
@@ -195,6 +206,10 @@ static unsigned int tftf_psci_get_pstate_format(void)
 
 	ret = tftf_get_psci_feature_info(SMC_PSCI_CPU_SUSPEND);
 
+	INFO("mb: smc fid:PSCI_FEATURES r0:PSCI_CPU_SUSPEND_AARCH64 returns ret 0x%x\n", (unsigned)ret);
+	INFO("	Bits[1]: 0 - original StateId format for power_state param, 1 - extended\n");
+	INFO("	Bits[0]: 0 - OS init. Mode not supported. tf-a doesn't support OS Init. Mode\n");
+
 	/*
 	 * If error is returned, then it probably means that the PSCI version
 	 * is less than 1.0 and only the original format is supported. In case
@@ -212,7 +227,7 @@ static unsigned int tftf_psci_get_pstate_format(void)
 	return (ret >> CPU_SUSPEND_FEAT_PSTATE_FORMAT_SHIFT) & 0x1;
 }
 
-/* Make the power state in the original format */
+/* Make the power state in the "original" format */
 uint32_t tftf_make_psci_pstate(uint32_t affinity_level,
 					uint32_t state_type,
 					uint32_t state_id)
@@ -277,9 +292,15 @@ void tftf_detect_psci_pstate_format(void)
 	 * succeeds then the platform uses NULL State-ID encoding. Else it
 	 * uses the recommended encoding for State-ID.
 	 */
+	/* mb:'s comments: "original" stateID differs to extended in bit-fields
+	 * (see PSCI docs of ARM) so that assumption is that if sending
+	 * PSCI_SUSPEND with stateId coded for "original" only "original"
+	 * should succeed.
+	 */
 	power_state = (PSTATE_AFF_LVL_0 << PSTATE_AFF_LVL_SHIFT)
 		  | (PSTATE_TYPE_STANDBY << PSTATE_TYPE_SHIFT);
 
+	INFO("mb: tft: power_state 0x%x\n", power_state);
 	ret = tftf_cpu_suspend(power_state);
 
 	/* Unmask the IRQ to let the interrupt handler to execute */

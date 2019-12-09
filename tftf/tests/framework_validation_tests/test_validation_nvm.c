@@ -102,6 +102,8 @@ static test_result_t test_validate_nvm_secondary(void)
 	unsigned int core_pos = platform_get_core_pos(mpid);
 	unsigned int ret;
 
+	INFO("mb: tft: %s(): cpu#%u\n", __func__, core_pos);
+
 	tftf_send_event(&cpu_ready[core_pos]);
 
 	/* Wait until all cores are ready to access simultaneously */
@@ -155,7 +157,11 @@ test_result_t test_validate_nvm_serialisation(void)
 			tftf_testcase_printf("Failed to power on CPU 0x%x (%d)\n",
 				target_mpid, rc);
 			return TEST_RESULT_SKIPPED;
+		} else {
+			INFO("mb: Powered on CPU 0x%x (%d)\n",
+				target_mpid, rc);
 		}
+
 	}
 
 	/* Wait for all non-lead CPU's to be ready */

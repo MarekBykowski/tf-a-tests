@@ -108,7 +108,8 @@ int tftf_suspend(const suspend_info_t *info)
 
 	disable_irq();
 
-	INFO("Going into suspend state\n");
+	INFO("mb: on CPU#%u: Going into suspend state\n",
+			platform_get_core_pos(read_mpidr_el1()));
 
 	/* Save the local GIC context */
 	arm_gic_save_context_local();
@@ -125,7 +126,8 @@ int tftf_suspend(const suspend_info_t *info)
 	 */
 	write_daif(flags);
 
-	INFO("Resumed from suspend state\n");
+	INFO("mb: on CPU#%u: Resumed from suspend state\n",
+			platform_get_core_pos(read_mpidr_el1()));
 
 	return rc;
 }

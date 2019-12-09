@@ -277,14 +277,14 @@ endif
 clean:
 			@echo "  CLEAN"
 			${Q}rm -rf ${BUILD_PLAT}
-			${MAKE} -C el3_payload clean
+			${MAKE} -C el3_payload clean PLAT=${PLAT}
 
 .PHONY: realclean distclean
 realclean distclean:
 			@echo "  REALCLEAN"
 			${Q}rm -rf ${BUILD_BASE}
 			${Q}rm -f ${CURDIR}/cscope.*
-			${MAKE} -C el3_payload distclean
+			${MAKE} -C el3_payload distclean PLAT=${PLAT}
 
 .PHONY: checkcodebase
 checkcodebase:		locate-checkpatch

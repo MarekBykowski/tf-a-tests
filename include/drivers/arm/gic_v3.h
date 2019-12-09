@@ -18,6 +18,7 @@
 #define GICD_CTLR_ENABLE_GRP1A		(1 << 1)
 #define GICD_CTLR_ARE_NS_SHIFT		4
 #define GICD_CTLR_ARE_NS_MASK		0x1
+#define GICD_CTLR_E1NWF			(1 << 7)
 
 /* GICR_TYPER bit definitions */
 #define TYPER_AFF_VAL_SHIFT	32

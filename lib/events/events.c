@@ -31,19 +31,21 @@ static void send_event_common(event_t *event, unsigned int inc)
 void tftf_send_event(event_t *event)
 {
 	VERBOSE("Sending event %p\n", (void *) event);
+	/*INFO("Sending event %p\n", (void *) event);*/
 	send_event_common(event, 1);
 }
 
 void tftf_send_event_to_all(event_t *event)
 {
 	VERBOSE("Sending event %p to all CPUs\n", (void *) event);
+	/*INFO("Sending event %p to all CPUs\n", (void *) event);*/
 	send_event_common(event, PLATFORM_CORE_COUNT);
 }
 
 void tftf_send_event_to(event_t *event, unsigned int cpus_count)
 {
 	assert(cpus_count <= PLATFORM_CORE_COUNT);
-	VERBOSE("Sending event %p to %u CPUs\n", (void *) event, cpus_count);
+	/*VERBOSE("Sending event %p to %u CPUs\n", (void *) event, cpus_count);*/
 	send_event_common(event, cpus_count);
 }
 
@@ -51,7 +53,7 @@ void tftf_wait_for_event(event_t *event)
 {
 	unsigned int event_received = 0;
 
-	VERBOSE("Waiting for event %p\n", (void *) event);
+	/*INFO("Waiting for event %p\n", (void *) event);*/
 	while (!event_received) {
 
 		dsbsy();
@@ -81,5 +83,5 @@ void tftf_wait_for_event(event_t *event)
 		}
 	}
 
-	VERBOSE("Received event %p\n", (void *) event);
+	/*INFO("Received event %p\n", (void *) event);*/
 }

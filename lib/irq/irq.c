@@ -99,6 +99,7 @@ void tftf_irq_enable(unsigned int irq_num, uint8_t irq_priority)
 	arm_gic_intr_enable(irq_num);
 
 	VERBOSE("Enabled IRQ #%u\n", irq_num);
+	/*INFO("mb: tft: Enabled IRQ #%u\n", irq_num);*/
 }
 
 void tftf_irq_disable(unsigned int irq_num)
@@ -107,6 +108,7 @@ void tftf_irq_disable(unsigned int irq_num)
 	arm_gic_intr_disable(irq_num);
 
 	VERBOSE("Disabled IRQ #%u\n", irq_num);
+	/*INFO("mb: tft: Disabled IRQ #%u\n", irq_num);*/
 }
 
 #define HANDLER_VALID(handler, expect_handler)		\
@@ -145,8 +147,10 @@ int tftf_irq_register_handler(unsigned int irq_num, irq_handler_t irq_handler)
 
 	ret = tftf_irq_update_handler(irq_num, irq_handler, false);
 	if (ret == 0)
-		INFO("Registered IRQ handler %p for IRQ #%u\n",
+		VERBOSE("Registered IRQ handler %p for IRQ #%u\n",
 			(void *)(uintptr_t) irq_handler, irq_num);
+		/*INFO("Registered IRQ handler %p for IRQ #%u\n",
+			(void *)(uintptr_t) irq_handler, irq_num);*/
 
 	return ret;
 }
@@ -157,7 +161,8 @@ int tftf_irq_unregister_handler(unsigned int irq_num)
 
 	ret = tftf_irq_update_handler(irq_num, NULL, true);
 	if (ret == 0)
-		INFO("Unregistered IRQ handler for IRQ #%u\n", irq_num);
+		VERBOSE("Unregistered IRQ handler for IRQ #%u\n", irq_num);
+		/*INFO("Unregistered IRQ handler for IRQ #%u\n", irq_num);*/
 
 	return ret;
 }

@@ -81,6 +81,7 @@ ${DUMP}: $(ELF)
 dump: ${DUMP}
 
 clean:
+	@echo "mb: PLAT_BUILD_DIR ${PLAT_BUILD_DIR}"
 	rm -rf ${PLAT_BUILD_DIR}
 
 distclean: clean

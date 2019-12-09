@@ -57,6 +57,8 @@ static void disable_systimer(void)
 	/* Check timer base is initialised */
 	assert(g_systimer_base);
 
+	/*INFO("mb: %s(): Deassert and disable the timer interrupt\n", __func__);*/
+
 	/* Deassert and disable the timer interrupt */
 	val = 0;
 	set_cntp_ctl_imask(val);

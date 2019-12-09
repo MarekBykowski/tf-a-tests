@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+/*#include <debug.h>*/
 
 /**********************************************************************
  * Macros which create inline functions to read or write CPU system
@@ -229,6 +230,7 @@ static inline void enable_irq(void)
 	 * are not necessarily in program order relatively with volatile inline
 	 * assembly statements (and volatile accesses).
 	 */
+	/*INFO("mb: tft: %s()\n", __func__);*/
 	COMPILER_BARRIER();
 	write_daifclr(DAIF_IRQ_BIT);
 	isb();

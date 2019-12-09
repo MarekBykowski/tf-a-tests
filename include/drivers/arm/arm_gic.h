@@ -36,6 +36,8 @@
 #define GIC_LOWEST_NS_PRIORITY	254 /* 255 would disable an interrupt */
 #define GIC_SPURIOUS_INTERRUPT	1023
 
+unsigned int gicv3_get_waker(uintptr_t core_pos);
+
 /******************************************************************************
  * Setup the global GIC interface. In case of GICv2, it would be the GIC
  * Distributor and in case of GICv3 it would be GIC Distributor and

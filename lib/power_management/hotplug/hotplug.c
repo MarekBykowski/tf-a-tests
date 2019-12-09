@@ -57,6 +57,7 @@ unsigned int tftf_inc_ref_cnt(void)
 	spin_unlock(&ref_cnt_lock);
 
 	VERBOSE("Entering the test (%u CPUs in the test now)\n", cnt);
+	INFO("Entering the test (%u CPUs in the test now)\n", cnt);
 
 	return cnt;
 }
@@ -71,6 +72,7 @@ unsigned int tftf_dec_ref_cnt(void)
 	spin_unlock(&ref_cnt_lock);
 
 	VERBOSE("Exiting the test  (%u CPUs in the test now)\n", cnt);
+	INFO("Exiting the test  (%u CPUs in the test now)\n", cnt);
 
 	return cnt;
 }
@@ -254,11 +256,20 @@ int32_t tftf_cpu_off(void)
 	tftf_prepare_cpu_off();
 	tftf_set_cpu_offline();
 
+#if 0
 	INFO("Powering off\n");
+#else
+	INFO("Powering off CPU#%u\n", 
+		platform_get_core_pos(read_mpidr_el1()));
+#endif
 
 	/* Flush console before the last CPU is powered off. */
-	if (tftf_get_ref_cnt() == 0)
-		console_flush();
+	if (tftf_get_ref_cnt() == 0) {
+		/*INFO("mb: flush console as last CPU is powering off (ref_cnt %u)\n",
+			tftf_get_ref_cnt());*/
+		/*console_flush();*/
+		/*INFO("mb: console flush done. Not really...\n");*/
+	}
 
 	/* Power off the CPU */
 	ret = tftf_psci_cpu_off();
@@ -306,7 +317,12 @@ void __dead2 tftf_warm_boot_main(void)
 
 	enable_irq();
 
+#if 0
 	INFO("Booting\n");
+#else
+	INFO("Booting CPU#%u\n",
+		platform_get_core_pos(read_mpidr_el1()));
+#endif
 
 	tftf_set_cpu_online();
 
