@@ -276,6 +276,7 @@ endif
 .PHONY: clean
 clean:
 			@echo "  CLEAN"
+			@echo "	 about to rm -rf ${BUILD_PLAT}"
 			${Q}rm -rf ${BUILD_PLAT}
 			${MAKE} -C el3_payload clean PLAT=${PLAT}
 

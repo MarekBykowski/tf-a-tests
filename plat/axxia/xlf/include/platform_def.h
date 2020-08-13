@@ -81,7 +81,7 @@
  ******************************************************************************/
 #define GPTIMER0_IRQ			62
 #define GPTIMER0_FREQ			125000000
-#define TIMERS_MEM_MAPPED		0
+#define GEN_TIMERS_MEM_MAPPED		0
 
 /*******************************************************************************
  * Non-Secure Software Generated Interupts IDs

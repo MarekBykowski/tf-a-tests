@@ -24,7 +24,7 @@ BASE_COMMIT		:= origin/master
 DEBUG			:= 1
 
 # Build platform
-DEFAULT_PLAT		:= xlf
+DEFAULT_PLAT		:= srp
 
 # Tests
 TESTS			:= tftf-validation

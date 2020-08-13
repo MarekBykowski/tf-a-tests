@@ -429,7 +429,7 @@ static test_result_t do_stress_test(void)
 
 	tftf_send_event(&cpu_ready[core_pos]);
 
-#if TIMERS_MEM_MAPPED
+#if GEN_TIMERS_MEM_MAPPED
 	end_time = mmio_read_64(SYS_CNT_BASE1 + CNTPCT_LO) + read_cntfrq_el0() * 10;
 #else
 	end_time = syscounter_read() + read_cntfrq_el0() * 10;
@@ -451,7 +451,7 @@ static test_result_t do_stress_test(void)
 	}
 
 	do {
-#if TIMERS_MEM_MAPPED
+#if GEN_TIMERS_MEM_MAPPED
 		current_time = mmio_read_64(SYS_CNT_BASE1 + CNTPCT_LO);
 #else
 		current_time = syscounter_read();

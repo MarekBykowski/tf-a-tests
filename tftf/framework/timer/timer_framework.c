@@ -60,7 +60,7 @@ static irq_handler_t timer_handler[PLATFORM_CORE_COUNT];
 static inline unsigned long long get_current_time_ms(void)
 {
 	assert(systicks_per_ms);
-#if TIMERS_MEM_MAPPED
+#if GEN_TIMERS_MEM_MAPPED
 	return mmio_read_64(SYS_CNT_BASE1 + CNTPCT_LO) / systicks_per_ms;
 #else
 	return syscounter_read() / systicks_per_ms;
