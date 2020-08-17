@@ -21,7 +21,7 @@ ARM_ARCH_MINOR		:= 0
 BASE_COMMIT		:= origin/master
 
 # Debug/Release build
-DEBUG			:= 0
+DEBUG			:= 1
 
 # Build platform
 DEFAULT_PLAT		:= srp

@@ -6,8 +6,10 @@
 #define __PLATFORM_DEF_H__
 
 /* Memory map related regions */
-#define DEVICE0_BASE		ULL(0x0400000000)
-#define DEVICE0_SIZE		ULL(0xC0000000)
+#define DEVICE0_BASE		ULL(0x480000000)
+#define DEVICE0_SIZE		ULL(0x40000000)
+#define SYS_CNT_BASE1		ULL(0) /*TODO*/
+#define SYS_CNT_SIZE		ULL(0) /*TODO: 0x1000*/
 
 #define CACHE_WRITEBACK_GRANULE		0x40
 
@@ -81,10 +83,9 @@
 
 /*******************************************************************************
  * Generic Timers. ARM requires Generic Timers to be memory-mapped but there
- * are systems that fail so. Examples are Axxia Gen2 (5600, and XLF) in which
- * the Timer hasn't been mapped. For details see "ARM® Architecture Reference
- * Manual ARMv8, for ARMv8-A architecture profile Beta, "I 1.1 About
- * the Generic Timer specification".
+ * are systems that fail so. Examples are Axxia Gen2 (5600, and XLF).
+ * For details see "ARM® Architecture Reference Manual ARMv8, for ARMv8-A
+ * architecture profile Beta, "I 1.1 About the Generic Timer specification".
  ******************************************************************************/
 #define GEN_TIMERS_MEM_MAPPED		0
 
@@ -111,9 +112,8 @@
  * TFTF_NVM_OFFSET/SIZE correspond to the NVM partition in the partition table
  * TODO: Not supported for now!
  */
-#define TFTF_NVM_SIZE			ULL(0x8080100000)
+#define TFTF_NVM_SIZE			ULL(0)
 #define TFTF_NVM_OFFSET			0x10000
-
 
 /* ARM PL011 UART */
 #define PL011_UART0_BASE                ULL(0x0480340000)
@@ -127,9 +127,10 @@
  * GIC-500. Intel decided to not use the legacy support for this GIC-500
  * configuration. This means the GIC-500 will run only in GICv3 compliant mode.
  */
-#define GICC_BASE			ULL(0x8001000000)
-#define GICD_BASE			ULL(0x8010000000)
-#define GICR_BASE			ULL(0x8010400000)
+#define GICC_BASE			ULL(0) /*GICv2 not supported*/ 
+#define GICD_BASE			ULL(0x500800000)
+#define GICD_SIZE			0x100000 /*TODO*/
+#define GICR_BASE			ULL(0x500880000)
 
 /*******************************************************************************
  * Platform specific page table and MMU setup constants
