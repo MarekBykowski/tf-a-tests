@@ -13,6 +13,8 @@
 static const mmap_region_t mmap[] = {
 	MAP_REGION_FLAT(TFTF_BASE, TFTF_SIZE, MT_MEMORY | MT_RW | MT_NS),
 	MAP_REGION_FLAT(DEVICE0_BASE, DEVICE0_SIZE, MT_DEVICE | MT_RW | MT_NS),
+#define GIC_SIZE                0x100000
+	MAP_REGION_FLAT(GICD_BASE, GIC_SIZE, MT_DEVICE | MT_RW | MT_NS),
 	{0}
 };
 
@@ -25,15 +27,15 @@ void tftf_platform_setup(void)
 
 void tftf_plat_arch_setup(void)
 {
-	INFO("mb: %s()\n", __func__);
 	tftf_plat_configure_mmu();
 }
 
 void tftf_early_platform_setup(void)
 {
 	console_init(CRASH_CONSOLE_BASE, PL011_UART_CLK_IN_HZ,
-		PL011_BAUDRATE);
+		     PL011_BAUDRATE);
 }
+
 
 extern void plat_get_nvm_handle(uintptr_t *handle);
 

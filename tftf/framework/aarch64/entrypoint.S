@@ -40,14 +40,18 @@ func tftf_entrypoint
 	ldr	x0, =__COHERENT_RAM_START__
 	ldr	x1, =__COHERENT_RAM_UNALIGNED_SIZE__
 	bl	zeromem16
-
 	/* --------------------------------------------------------------------
 	 * Give ourselves a small coherent stack to ease the pain of
 	 * initializing the MMU
 	 * --------------------------------------------------------------------
 	 */
-	mrs	x0, mpidr_el1
+	/*
+	mov	x0, #0 /*TODO: "mrs x0, mpidr_el1" not supported yet*/
 	bl	platform_set_coherent_stack
+
+	/*SP at #0x26000*/
+	mov_imm x0, 0x40000
+	mov	sp, x0
 
 	bl	tftf_early_platform_setup
 	bl	tftf_plat_arch_setup
@@ -56,7 +60,7 @@ func tftf_entrypoint
 	 * Give ourselves a stack allocated in Normal -IS-WBWA memory
 	 * --------------------------------------------------------------------
 	 */
-	mrs	x0, mpidr_el1
+	mov	x0, #0 /*TODO: "mrs x0, mpidr_el1" not supported yet*/
 	bl	platform_set_stack
 
 	/* --------------------------------------------------------------------
@@ -135,7 +139,7 @@ func save_primary_mpid
 	cmp	w0, w2
 	b.ne	panic
 	mov_imm	x2, MPID_MASK
-	mrs	x0, mpidr_el1
+	mov	x0, #0 /*TODO: "mrs x0, mpidr_el1" not supported yet*/
 	and	x0, x0, x2
 	str	w0, [x1, :lo12:tftf_primary_core]
 	ret
