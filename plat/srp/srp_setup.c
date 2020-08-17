@@ -12,9 +12,7 @@
 
 static const mmap_region_t mmap[] = {
 	MAP_REGION_FLAT(TFTF_BASE, TFTF_SIZE, MT_MEMORY | MT_RW | MT_NS),
-	MAP_REGION_FLAT(XLF_CCN_BASE, XLF_CCN_SIZE, MT_DEVICE | MT_RW | MT_NS),
 	MAP_REGION_FLAT(DEVICE0_BASE, DEVICE0_SIZE, MT_DEVICE | MT_RW | MT_NS),
-	MAP_REGION_FLAT(DEVICE1_BASE, DEVICE1_SIZE, MT_DEVICE | MT_RW | MT_NS),
 	{0}
 };
 
@@ -27,6 +25,7 @@ void tftf_platform_setup(void)
 
 void tftf_plat_arch_setup(void)
 {
+	INFO("mb: %s()\n", __func__);
 	tftf_plat_configure_mmu();
 }
 

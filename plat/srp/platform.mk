@@ -4,10 +4,10 @@
 
 PLAT_INCLUDES	:=	-Iplat/srp/include/
 
-PLAT_SOURCES	:=	plat/srp/xlf_setup.c		\
-			plat/srp/xlf_pwr_state.c		\
+PLAT_SOURCES	:=	plat/srp/srp_setup.c		\
+			plat/srp/srp_pwr_state.c		\
 			plat/srp/aarch64/plat_helpers.S		\
-			plat/srp/xlf_timers.c			\
+			plat/srp/srp_timers.c			\
 			drivers/arm/pl011/${ARCH}/pl011_console.S	\
 			drivers/arm/gic/arm_gic_v2v3.c			\
 			drivers/arm/gic/gic_v2.c			\
@@ -22,5 +22,5 @@ TFTF_CFLAGS		+= -Wno-maybe-uninitialized
 LOG_LEVEL := 40
 
 ifeq ($(USE_NVM),1)
-$(error "xlf port of TFTF doesn't currently support USE_NVM=1")
+$(error "srp port of TFTF doesn't currently support USE_NVM=1")
 endif
