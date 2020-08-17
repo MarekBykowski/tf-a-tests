@@ -24,7 +24,10 @@ BASE_COMMIT		:= origin/master
 DEBUG			:= 0
 
 # Build platform
-DEFAULT_PLAT		:= fvp
+DEFAULT_PLAT		:= srp
+
+# Tests
+TESTS			:= tftf-validation
 
 # Enable Pointer Authentication support in the TFTF
 ENABLE_PAUTH		:= 0
