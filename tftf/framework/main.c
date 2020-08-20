@@ -508,10 +508,14 @@ void __dead2 tftf_cold_boot_main(void)
 {
 	STATUS status;
 	int rc;
+	unsigned long mpidr = 0;
 
 	NOTICE("%s\n", TFTF_WELCOME_STR);
 	NOTICE("%s\n", build_message);
 	NOTICE("%s\n\n", version_string);
+
+	__asm__ volatile("mrs %x[value], mpidr_el1" : [value] "=r" (mpidr));
+	NOTICE("mb: mpidr_el1 0x%lx platform_get_core_pos 0x%x\n", mpidr, platform_get_core_pos(mpidr));
 
 #ifndef AARCH32
 	NOTICE("Running at NS-EL%u\n", IS_IN_EL(1) ? 1 : 2);
